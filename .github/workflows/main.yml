@@ -5,7 +5,7 @@ on:
     - cron: "0 3 * * 1"
   push:
     branches:
-      - main
+      - fork
   workflow_dispatch:
 
 concurrency:
