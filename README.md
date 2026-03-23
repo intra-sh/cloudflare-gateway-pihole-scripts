@@ -28,7 +28,7 @@ Cloudflare Gateway allows you to create custom rules to filter HTTP, DNS, and ne
 
 1. Node.js installed on your machine
 2. Cloudflare [Zero Trust](https://one.dash.cloudflare.com/) account - the Free plan is enough. Use the Cloudflare [documentation](https://developers.cloudflare.com/cloudflare-one/) for details.
-3. Cloudflare email, API **token** with Zero Trust read and edit permissions, and account ID. See [here](https://github.com/mrrfv/cloudflare-gateway-pihole-scripts/blob/main/extended_guide.md#cloudflare_api_token) for more information about how to create the token.
+3. API **token** and account ID. See [here](https://github.com/mrrfv/cloudflare-gateway-pihole-scripts/blob/main/extended_guide.md#cloudflare_api_token) for how to create the token with minimal scopes.
 4. A file containing the domains you want to block - **max 300,000 domains for the free plan** - in the working directory named `blocklist.txt`. Mullvad provides awesome [DNS blocklists](https://github.com/mullvad/dns-blocklists) that work well with this project. A script that downloads recommended blocklists, `download_lists.js`, is included.
 5. Optional: You can whitelist domains by putting them in a file `allowlist.txt`. You can also use the `get_recomended_whitelist.sh` Bash script to get the recommended whitelists.
 6. Optional: A Discord (or similar) webhook URL to send notifications to.
@@ -53,9 +53,9 @@ Please note that:
 
 1. Create a new empty, private repository. Forking or public repositories are discouraged, but supported - although the script never leaks your API keys and GitHub Actions secrets are automatically redacted from the logs, it's better to be safe than sorry. There is **no need to use the "Sync fork" button** if you're doing that! The GitHub Action downloads the latest code regardless of what's in your forked repository.
 2. Create the following GitHub Actions secrets in your repository settings:
-   - `CLOUDFLARE_API_TOKEN`: Your Cloudflare API Token with Zero Trust read and edit permissions
+   - `CLOUDFLARE_API_TOKEN`: Your Cloudflare API Token. Use the minimal permissions listed in the "Minimal API token permissions" section below.
    - `CLOUDFLARE_ACCOUNT_ID`: Your Cloudflare account ID
-   - `CLOUDFLARE_LIST_ITEM_LIMIT`: The maximum number of blocked domains allowed for your Cloudflare Zero Trust plan. Default to 300,000. Optional if you are using the free plan.
+   - `CLOUDFLARE_LIST_ITEM_LIMIT`: The maximum number of domains CGPS puts into each Cloudflare list (chunk size). This value is also used to calculate how many lists need to be created. Defaults to 300,000.
    - `PING_URL`: /Optional/ The HTTP(S) URL to ping (using curl) after the GitHub Action has successfully updated your filters. Useful for monitoring.
    - `DISCORD_WEBHOOK_URL`: /Optional/ The Discord (or similar) webhook URL to send notifications to. Good for monitoring as well.
 3. Create the following GitHub Actions variables in your repository settings if you desire:
@@ -82,6 +82,25 @@ The default filter lists are only optimized for ad & tracker blocking because Cl
 To see if e.g. your filter lists are valid without actually changing anything in your Cloudflare account, you can set the `DRY_RUN` environment variable to 1, either in `.env` or the regular way. This will only print info such as the lists that would be created or the amount of duplicate domains to the console.
 
 **Warning:** This currently only works for `cf_list_create.js`.
+
+### List size behavior
+
+- `CLOUDFLARE_LIST_ITEM_LIMIT` controls list chunking when creating/updating CGPS lists.
+- The script uses a separate internal API page size (`LIST_ITEM_PAGE_SIZE = 1000`) only for paginated reads from Cloudflare.
+- API page size is not the same as list chunk size.
+
+### Minimal API token permissions
+
+Create an Account token scoped to the specific account you use with CGPS.
+
+For the endpoints used by this repository, the minimum practical permissions are:
+
+- `Zero Trust Gateway Lists: Read`
+- `Zero Trust Gateway Lists: Write`
+- `Zero Trust Gateway Rules: Read`
+- `Zero Trust Gateway Rules: Write`
+
+If your Cloudflare UI only exposes broader "Zero Trust" scopes instead of per-resource scopes, use the smallest available `Zero Trust` read/edit scopes for the selected account only.
 
 <!-- markdownlint-disable-next-line MD026 -->
 ## Why not...

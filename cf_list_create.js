@@ -6,7 +6,6 @@ import {
   DEBUG,
   DRY_RUN,
   LIST_ITEM_LIMIT,
-  LIST_ITEM_SIZE,
   PROCESSING_FILENAME,
 } from "./lib/constants.js";
 import { normalizeDomain } from "./lib/helpers.js";
@@ -124,7 +123,7 @@ await readFile(resolve(`./${blocklistFilename}`), (line, rl) => {
   }
 });
 
-const numberOfLists = Math.ceil(domains.length / LIST_ITEM_SIZE);
+const numberOfLists = Math.ceil(domains.length / LIST_ITEM_LIMIT);
 
 console.log("\n\n");
 console.log(`Number of processed domains: ${processedDomainCount}`);

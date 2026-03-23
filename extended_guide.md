@@ -24,15 +24,23 @@ Cloudflare API Token can be created in your [Cloudflare profile](https://dash.cl
 
 1. Click "Create Token" and click "Get Started" in the "Create Custom Token" row.
 2. Enter any name for your token
-3. Add Zero Trust Read and Edit permissions for your account
-4. Click "Continue to summary" and click "Create Token"
-5. You will see the created API Token
+3. Scope the token to the specific account used by this project.
+4. Add the minimal permissions required by this repository:
+	- `Zero Trust Gateway Lists: Read`
+	- `Zero Trust Gateway Lists: Write`
+	- `Zero Trust Gateway Rules: Read`
+	- `Zero Trust Gateway Rules: Write`
+5. If your Cloudflare UI only exposes broader "Zero Trust" scopes, choose the smallest available read/edit scopes for that account.
+6. Click "Continue to summary" and click "Create Token"
+7. You will see the created API Token
 
 ![Creating API Token](.github/images/create_api_token.png)
 
 #### `CLOUDFLARE_LIST_ITEM_LIMIT`
 
-The Cloudflare list item limit is the maximum number of items (blocked domains) that can be added to Cloudflare. The default value of 300,000 is the maximum allowed by Cloudflare for free accounts. If you pay for Cloudflare Zero Trust, you might be able to increase this value.
+This value controls how many domains CGPS puts into each list chunk when creating/updating lists. It is also used to calculate how many lists CGPS will create. Default is 300,000.
+
+This is separate from the internal API pagination size used by the script to read list items (`LIST_ITEM_PAGE_SIZE = 1000`).
 
 ### Other
 
