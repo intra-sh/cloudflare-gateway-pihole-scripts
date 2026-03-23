@@ -34,7 +34,7 @@ let allowedDomainCount = 0;
 const memoizedNormalizeDomain = memoize(normalizeDomain);
 const effectiveListItemLimit = Number.isInteger(LIST_ITEM_LIMIT) && LIST_ITEM_LIMIT > 0
   ? LIST_ITEM_LIMIT
-  : 300000;
+  : 1000;
 
 // Check if the blocklist.txt and allowlist.txt files exist
 for (const filename of [allowlistFilename, blocklistFilename]) {
