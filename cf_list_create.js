@@ -32,6 +32,9 @@ let unnecessaryDomainCount = 0;
 let duplicateDomainCount = 0;
 let allowedDomainCount = 0;
 const memoizedNormalizeDomain = memoize(normalizeDomain);
+const effectiveListItemLimit = Number.isInteger(LIST_ITEM_LIMIT) && LIST_ITEM_LIMIT > 0
+  ? LIST_ITEM_LIMIT
+  : 300000;
 
 // Check if the blocklist.txt and allowlist.txt files exist
 for (const filename of [allowlistFilename, blocklistFilename]) {
@@ -60,7 +63,7 @@ await readFile(resolve(`./${allowlistFilename}`), (line) => {
 // Read blocklist
 console.log(`Processing ${blocklistFilename}`);
 await readFile(resolve(`./${blocklistFilename}`), (line, rl) => {
-  if (domains.length === LIST_ITEM_LIMIT) {
+  if (domains.length === effectiveListItemLimit) {
     return;
   }
 
@@ -115,7 +118,7 @@ await readFile(resolve(`./${blocklistFilename}`), (line, rl) => {
   blocklist.set(domain, 1);
   domains.push(domain);
 
-  if (domains.length === LIST_ITEM_LIMIT) {
+  if (domains.length === effectiveListItemLimit) {
     console.log(
       "Maximum number of blocked domains reached - Stopping processing blocklist..."
     );
@@ -123,7 +126,7 @@ await readFile(resolve(`./${blocklistFilename}`), (line, rl) => {
   }
 });
 
-const numberOfLists = Math.ceil(domains.length / LIST_ITEM_LIMIT);
+const numberOfLists = Math.ceil(domains.length / effectiveListItemLimit);
 
 console.log("\n\n");
 console.log(`Number of processed domains: ${processedDomainCount}`);
